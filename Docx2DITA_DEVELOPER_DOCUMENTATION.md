@@ -63,7 +63,7 @@ The DOCX to DITA Migration Backend is a Node.js-based web service that converts 
 4. **Output Layer**: DITA file generation and packaging
 5. **Cleanup Layer**: Temporary file management
 
-![Alt text](./img/docx2dita.png "Optional Title")
+![Sequential diagram](./img/docx2dita.png)
 
 ## Technology Stack
 

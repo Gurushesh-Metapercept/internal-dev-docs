@@ -1,6 +1,7 @@
 # Markdown to DITA Parser - Developer Documentation
 
 ## Table of Contents
+
 1. [Project Overview](#project-overview)
 2. [System Architecture](#system-architecture)
 3. [Technology Stack](#technology-stack)
@@ -26,6 +27,7 @@
 The **Markdown to DITA Parser** is a Node.js-based web service that converts Markdown (.md) and MDX (.mdx) files into DITA (Darwin Information Typing Architecture) XML format. The system provides a RESTful API for file upload, processing, and download of converted DITA files.
 
 ### Key Features
+
 - **Batch Processing**: Handles multiple markdown files in ZIP archives
 - **User Authentication**: JWT-based authentication system
 - **File Validation**: Pre-flight checks for file structure and content
@@ -67,14 +69,18 @@ The **Markdown to DITA Parser** is a Node.js-based web service that converts Mar
                     └─────────────────┘
 ```
 
+![Sequential diagram](./img/md2dita.png)
+
 ## Technology Stack
 
 ### Backend Framework
+
 - **Node.js**: Runtime environment
 - **Express.js**: Web application framework
 - **Nodemon**: Development server with auto-restart
 
 ### Markdown Processing
+
 - **markdown-it**: Core markdown parser
 - **markdown-it-emoji**: Emoji support
 - **markdown-it-sup/sub**: Superscript/subscript
@@ -88,21 +94,25 @@ The **Markdown to DITA Parser** is a Node.js-based web service that converts Mar
 - **markdown-it-jsx**: JSX component support
 
 ### HTML/XML Processing
+
 - **cheerio**: Server-side jQuery for HTML manipulation
 - **html-to-json-parser**: HTML to JSON conversion
 - **xml-formatter**: XML formatting and beautification
 - **xmldom**: XML DOM manipulation
 
 ### Database
+
 - **MongoDB**: Document database
 - **Mongoose**: MongoDB object modeling
 
 ### Authentication & Security
+
 - **bcrypt**: Password hashing
 - **jsonwebtoken**: JWT token generation
 - **cors**: Cross-origin resource sharing
 
 ### File Handling
+
 - **express-fileupload**: File upload middleware
 - **adm-zip**: ZIP file handling
 - **archiver**: Archive creation
@@ -110,6 +120,7 @@ The **Markdown to DITA Parser** is a Node.js-based web service that converts Mar
 - **gray-matter**: Front matter parsing
 
 ### Utilities
+
 - **uuid**: Unique identifier generation
 - **shelljs**: Shell command execution
 - **useragent**: User agent parsing
@@ -159,6 +170,7 @@ MD_DITA_Backend/
 ## Core Processing Flow
 
 ### 1. File Upload & Validation
+
 ```javascript
 POST /api/pre-flight-check
 ├── User uploads ZIP file
@@ -169,6 +181,7 @@ POST /api/pre-flight-check
 ```
 
 ### 2. Main Processing
+
 ```javascript
 POST /api/markdowntodita
 ├── Load DITA tag mappings from database
@@ -190,6 +203,7 @@ POST /api/markdowntodita
 ```
 
 ### 3. File Download
+
 ```javascript
 GET /api/download/:userId/:downloadId
 ├── Validate download request
@@ -201,7 +215,9 @@ GET /api/download/:userId/:downloadId
 ## Key Components
 
 ### Main Application (api.js)
+
 The central Express application that handles:
+
 - Route definitions
 - Middleware setup
 - User authentication
@@ -210,7 +226,9 @@ The central Express application that handles:
 - Database connections
 
 ### Processing Engine (utils/mainMethod.js)
+
 Core processing logic that:
+
 - Configures markdown-it with all plugins
 - Processes files recursively
 - Handles different file types (.md, .mdx)
@@ -218,7 +236,9 @@ Core processing logic that:
 - Generates processing logs
 
 ### Schema Validation (schema.js)
+
 Comprehensive DITA schema definitions including:
+
 - Element hierarchies
 - Attribute specifications
 - Content models
@@ -226,7 +246,9 @@ Comprehensive DITA schema definitions including:
 - Topic types (concept, task, reference)
 
 ### State Management (state/)
+
 Manages application state across processing:
+
 - **allVeriables.js**: Global variables and user-specific paths
 - **ditaMap.js**: DITA map structure building
 - **logData.js**: Processing logs and error tracking
@@ -236,6 +258,7 @@ Manages application state across processing:
 ## Database Schema
 
 ### User Model
+
 ```javascript
 {
   email: String (required, unique),
@@ -246,6 +269,7 @@ Manages application state across processing:
 ```
 
 ### DITA Tag Model
+
 ```javascript
 {
   key: String (HTML tag identifier),
@@ -254,6 +278,7 @@ Manages application state across processing:
 ```
 
 ### MD Tag Model
+
 ```javascript
 {
   key: String (markdown element identifier),
@@ -262,6 +287,7 @@ Manages application state across processing:
 ```
 
 ### User Agent Details Model
+
 ```javascript
 {
   userAgent: String,
@@ -273,21 +299,25 @@ Manages application state across processing:
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/register` - User registration
 - `POST /api/login` - User authentication
 
 ### File Processing
+
 - `POST /api/pre-flight-check` - Validate uploaded files
 - `POST /api/markdowntodita` - Convert markdown to DITA
 - `GET /api/download/:userId/:downloadId` - Download processed files
 
 ### Tag Management
+
 - `POST /api/insertDitaTag` - Update DITA tag mappings
 - `GET /api/insertDitaTag` - Retrieve DITA tag mappings
 
 ## Processing Pipeline
 
 ### Stage 1: Markdown Parsing
+
 ```javascript
 // Configure markdown-it with plugins
 const md = new markdownIt()
@@ -306,6 +336,7 @@ const md = new markdownIt()
 ```
 
 ### Stage 2: HTML Enhancement
+
 ```javascript
 // Add table structure with Cheerio
 $("table").each((index, element) => {
@@ -318,20 +349,17 @@ $("table").each((index, element) => {
 ```
 
 ### Stage 3: JSON Transformation
+
 ```javascript
 // Convert HTML to JSON for processing
 let result = await HTMLToJSON(contentWithHmtlAsRootElement, false);
 
 // Remove unwanted elements
-result = await removeUnwantedElements(
-  result,
-  {},
-  "",
-  userId
-);
+result = await removeUnwantedElements(result, {}, "", userId);
 ```
 
 ### Stage 4: DITA Generation
+
 ```javascript
 // Convert back to HTML/XML
 const modifiedDitaCode = await JSONToHTML(characterToEntity(result));
@@ -352,7 +380,9 @@ const prologContent = `
 ## State Management
 
 ### User-Specific State
+
 Each user session maintains isolated state:
+
 - Input/output folder paths
 - Processing logs
 - Tag mappings
@@ -360,13 +390,17 @@ Each user session maintains isolated state:
 - DITA map structure
 
 ### Global State
+
 Application-wide configurations:
+
 - AI tags list
 - Schema definitions
 - Default tag mappings
 
 ### State Cleanup
+
 Automatic cleanup after processing:
+
 - Remove temporary files
 - Reset user state
 - Clear memory allocations
@@ -374,29 +408,34 @@ Automatic cleanup after processing:
 ## Utility Functions
 
 ### File Operations
+
 - **createDirectory.js**: Recursive directory creation
 - **fileValidator.js**: File type and content validation
 - **ValidDirectory.js**: Directory structure validation
 - **fixImagePath.js**: Image path resolution
 
 ### Content Processing
+
 - **characterToEntity.js**: HTML entity conversion
 - **removeUnwantedElements.js**: DOM cleanup
 - **taskFileMaker.js**: DITA task file generation
 - **processTopicWise.js**: Topic-based processing
 
 ### Data Transformation
+
 - **moveTitleAboveBody.js**: Structure reorganization
 - **SortTopicsTags.js**: Topic hierarchy sorting
 - **xRefPathFixer.js**: Cross-reference path correction
 
 ### Logging & Monitoring
+
 - **logFileGenerator.js**: Processing log creation
 - **historyTracker.js**: Operation history tracking
 
 ## Configuration
 
 ### Environment Variables
+
 ```bash
 # Database
 MONGODB_URI=mongodb://localhost:27017/mdtodita
@@ -413,6 +452,7 @@ NODE_ENV=development
 ```
 
 ### Nodemon Configuration
+
 ```json
 {
   "watch": ["*.js", "utils/*.js", "models/*.js"],
@@ -425,11 +465,13 @@ NODE_ENV=development
 ## Development Setup
 
 ### Prerequisites
+
 - Node.js (v14 or higher)
 - MongoDB (v4.4 or higher)
 - Git
 
 ### Installation Steps
+
 ```bash
 # Clone repository
 git clone <repository-url>
@@ -450,6 +492,7 @@ npm start
 ```
 
 ### Development Workflow
+
 1. Make code changes
 2. Nodemon automatically restarts server
 3. Test API endpoints
@@ -459,6 +502,7 @@ npm start
 ## Deployment
 
 ### Production Environment
+
 ```bash
 # Set production environment
 NODE_ENV=production
@@ -473,6 +517,7 @@ pm2 start api.js --name "md-dita-parser"
 ```
 
 ### Docker Deployment
+
 ```dockerfile
 FROM node:16-alpine
 WORKDIR /app
@@ -486,21 +531,25 @@ CMD ["node", "api.js"]
 ## Error Handling
 
 ### Validation Errors
+
 - File format validation
 - Content structure validation
 - Schema compliance checking
 
 ### Processing Errors
+
 - Markdown parsing errors
 - HTML conversion errors
 - DITA generation errors
 
 ### System Errors
+
 - Database connection errors
 - File system errors
 - Memory allocation errors
 
 ### Error Response Format
+
 ```json
 {
   "message": "Error description",
@@ -512,21 +561,25 @@ CMD ["node", "api.js"]
 ## Performance Considerations
 
 ### Concurrent Processing
+
 - Uses Promise.all for parallel file processing
 - Implements user-specific processing queues
 - Manages memory usage during large file processing
 
 ### File System Optimization
+
 - Temporary file cleanup
 - Efficient ZIP handling
 - Stream-based file operations
 
 ### Database Optimization
+
 - Indexed user queries
 - Connection pooling
 - Query optimization
 
 ### Memory Management
+
 - Garbage collection optimization
 - Large file streaming
 - Buffer management
@@ -534,21 +587,25 @@ CMD ["node", "api.js"]
 ## Security Features
 
 ### Authentication
+
 - JWT token-based authentication
 - Password hashing with bcrypt
 - Session management
 
 ### File Security
+
 - File type validation
 - Content sanitization
 - Path traversal prevention
 
 ### API Security
+
 - CORS configuration
 - Rate limiting considerations
 - Input validation
 
 ### Data Protection
+
 - User data isolation
 - Temporary file cleanup
 - Secure file handling
@@ -556,21 +613,25 @@ CMD ["node", "api.js"]
 ## Testing
 
 ### Unit Tests
+
 - Utility function testing
 - Schema validation testing
 - Data transformation testing
 
 ### Integration Tests
+
 - API endpoint testing
 - Database integration testing
 - File processing pipeline testing
 
 ### End-to-End Tests
+
 - Complete workflow testing
 - Error scenario testing
 - Performance testing
 
 ### Test Data
+
 - Sample markdown files
 - Expected DITA outputs
 - Error case scenarios
@@ -580,39 +641,49 @@ CMD ["node", "api.js"]
 ### Common Issues
 
 #### File Processing Failures
+
 - **Symptom**: Files not converting properly
 - **Causes**: Invalid markdown syntax, missing titles, unsupported elements
 - **Solutions**: Check pre-flight validation, review markdown syntax, update schema mappings
 
 #### Memory Issues
+
 - **Symptom**: Server crashes during large file processing
 - **Causes**: Insufficient memory allocation, memory leaks
 - **Solutions**: Increase Node.js memory limit, implement streaming, optimize processing
 
 #### Database Connection Issues
+
 - **Symptom**: Authentication failures, tag mapping errors
 - **Causes**: MongoDB connection problems, network issues
 - **Solutions**: Check MongoDB status, verify connection string, implement retry logic
 
 #### File System Errors
+
 - **Symptom**: Cannot create output files, permission errors
 - **Causes**: Insufficient permissions, disk space issues
 - **Solutions**: Check file permissions, verify disk space, implement error handling
 
 ### Debug Mode
+
 Enable detailed logging:
+
 ```bash
 DEBUG=* npm start
 ```
 
 ### Log Analysis
+
 Check processing logs in:
+
 - Console output
 - Generated log files
 - Database error logs
 
 ### Performance Monitoring
+
 Monitor:
+
 - Memory usage
 - CPU utilization
 - File processing times
@@ -621,18 +692,21 @@ Monitor:
 ## Maintenance
 
 ### Regular Tasks
+
 - Clean up temporary files
 - Monitor disk usage
 - Update dependencies
 - Review error logs
 
 ### Database Maintenance
+
 - Index optimization
 - Data cleanup
 - Backup procedures
 - Performance monitoring
 
 ### Security Updates
+
 - Dependency updates
 - Security patch application
 - Vulnerability scanning

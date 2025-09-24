@@ -59,6 +59,8 @@ The HTML to DITA Conversion System is a Node.js-based web service that converts 
 5. **Database Layer**: MongoDB for user data and tag mappings
 6. **File System**: Temporary storage for input/output files
 
+![Sequential diagram](./img/html2dita.png)
+
 ## Technology Stack
 
 ### Core Technologies
